@@ -4,5 +4,31 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 	
 	<!-- Root Context: defines shared resources visible to all other web components -->
-		
+	
+<!-- Apache DBCP DataSource를 생성한다. 데이터베이스 관련 설정은 jdbc.properties를 따른다. -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driverClass}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+    
+   <!-- mybatis SqlSessionFactory 빈을 생성한다. mybatis에서 사용할 매퍼 XML의 경로를 설정한다. -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+     <property name="dataSource" ref="dataSource"/>
+     <property name="mapperLocations" value="classpath:com/preludeb/sample/mapper/-.xml"/>
+    </bean>
+    
+    <!-- SqlSession 빈을 생성한다. -->
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+     <constructor-arg index="0" ref="sqlSessionFactory"></constructor-arg>
+    </bean>    
+  
+    	 <!-- 트랜잭션 매니저 빈을 생성한다. -->
+ <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+  <property name="dataSource" ref="dataSource"/>
+    </bean>
+    
+
+
 </beans>
